@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
-import Header from "../../../Components/Heading/Header";
-import MenuDetails from "../../../Components/MenuDetails/MenuDetails";
-const MenuItem = () => {
+import MenuDetails from "../../Components/MenuDetails/MenuDetails";
+
+const MenuPageItem = () => {
   const [menu, setMenu] = useState();
   useEffect(() => {
     fetch("http://localhost:9000/menu")
       .then((res) => res.json())
       .then((data) => {
-        const popularItems = data.filter((item) => item.category === "popular");
-        setMenu(popularItems);
+        setMenu(data);
       });
   });
-  
   return (
-    <section className="mt-16 mb-12">
-      <Header Heading={"---Form Our Menu---"} SubHeading={"Popular Items"}></Header>
-
+    <div>
       <div className="grid md:grid-cols-2 gap-5">
         {menu?.map((item) => (
           <MenuDetails key={item._id} item={item}></MenuDetails>
@@ -27,8 +23,8 @@ const MenuItem = () => {
           View Full Menu
         </button>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default MenuItem;
+export default MenuPageItem;

@@ -6,6 +6,8 @@ import soup from "./../../assets/shop/banner2.jpg"
 import desert from "./../../assets/home/chef-service.jpg"
 import pizza from "./../../assets/menu/pizza-bg.jpg"
 import salad from "./../../assets/menu/salad-bg.jpg"
+import Header from './../../Components/Heading/Header';
+import MenuPageItem from "./MenuPageItem";
 
 
 const MenuPage = () => {
@@ -20,7 +22,8 @@ const MenuPage = () => {
       description="Would you like to try a dish?"
       width="h-[700px]"
       ></MenuCover>
-      <MenuItem></MenuItem>
+      <Header Heading="---Don't Miss---" SubHeading="Today's Offer"></Header>
+      <MenuPageItem></MenuPageItem>
       <MenuCover
       img={desert}
       title="Desserts"
