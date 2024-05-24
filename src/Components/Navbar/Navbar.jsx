@@ -1,4 +1,7 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../Provider/AuthProvider";
+import useCart from "../../Hook/useCart";
 
 const Navbar = () => {
   const navlinks = (
@@ -19,6 +22,13 @@ const Navbar = () => {
       </ul>
     </>
   );
+  const { user, signOutUser } = useContext(AuthContext);
+  const [cart]= useCart()
+  const handleLogOut = () => {
+    signOutUser()
+      .then(() => {})
+      .catch((error) => console.log(error));
+  };
 
   return (
     <div className="navbar fixed z-10 bg-opacity-35 container mx-auto bg-base-100 text-white">
@@ -51,7 +61,30 @@ const Navbar = () => {
       </div>
       <div className="navbar-center hidden lg:flex">{navlinks}</div>
       <div className="navbar-end">
-        <Link to="/signIn" className="btn">Login</Link>
+        <div className="mr-3">
+          <button className="btn">
+            Cart
+            <div className="badge bg-[#ceb174]">+{cart.length}</div>
+          </button>
+        </div>
+        <div className="">
+          {user ? (
+            <>
+              <button
+                onClick={handleLogOut}
+                className="bg-[#ceb174] text-white px-4 py-2 rounded-full transition duration-200 ease-in-out hover:bg-[#c8a65b] active:bg-[#c6952d] focus:outline-none"
+              >
+                Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/signIn" className="btn">
+                Login
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

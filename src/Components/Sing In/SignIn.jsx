@@ -1,14 +1,24 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { loadCaptchaEnginge, LoadCanvasTemplate, validateCaptcha } from 'react-simple-captcha';
+import { useContext, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  loadCaptchaEnginge,
+  LoadCanvasTemplate,
+  validateCaptcha,
+} from "react-simple-captcha";
 import loginBg from "./../../assets/reservation/wood-grain-pattern-gray1x.png";
 import loginBg2 from "./../../assets/others/authentication.png";
 import loginAsideBg from "./../../assets/others/authentication2.png";
+import { AuthContext } from "../../Provider/AuthProvider";
+import Swal from "sweetalert2";
 
 const SignIn = () => {
-  const captchaRef = useRef(null);
   const [disable, setDisable] = useState(true);
+  const { SignIn } = useContext(AuthContext);
+  const navigate =useNavigate();
+  const location =useLocation();
+
+  const formLocation = location.state?.form?.pathname || "/";
 
   useEffect(() => {
     loadCaptchaEnginge(6);
@@ -19,14 +29,37 @@ const SignIn = () => {
     const form = event.target;
     const email = form.email.value;
     const password = form.password.value;
-    console.log(email, password);
+    SignIn(email, password)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "User Login Successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate(formLocation, {replace: true});
+      })
+      .catch((error) => {
+        console.log(error);
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "Failed to login",
+          text: error.message,
+          showConfirmButton: true,
+        });
+      });
   };
 
-  const handleCaptcha = () => {
-    const value = captchaRef.current.value;
-    
+  const handleCaptcha = (e) => {
+    const value = e.target.value;
     if (validateCaptcha(value)) {
       setDisable(false);
+    } else {
+      setDisable(true);
     }
   };
 
@@ -47,10 +80,10 @@ const SignIn = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="">
+        <div>
           <img src={loginAsideBg} alt="Side background" />
         </div>
-        <div className="">
+        <div>
           <h1 className="text-5xl mb-6 font-bold text-center">
             Please Sign In
           </h1>
@@ -93,20 +126,14 @@ const SignIn = () => {
               <input
                 type="text"
                 name="captcha"
-                ref={captchaRef}
+                onBlur={handleCaptcha}
                 id="captcha"
                 placeholder="Enter Captcha"
                 className="w-full px-4 py-3 rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800 focus:dark:border-[#ceb174]"
-                onBlur={handleCaptcha}  // Ensure handleCaptcha is called when input loses focus
               />
-              <div className="flex mt-2 justify-center items-center">
-                <button type="button" onClick={handleCaptcha} className="btn btn-outline w-1/2 mt-2 btn-xs bg-transparent hover:bg-[#ceb174] text-black hover:text-white">
-                  Validate
-                </button>
-              </div>
             </div>
             <input
-              className="block w-full p-3 text-xl font-medium hover:scale-105 text-center rounded-md dark:text-gray-50 dark:bg-[#ceb174] transition-transform duration-300"
+              className="block w-full p-3 text-xl font-medium hover:scale-105 text-center rounded-md dark:text-gray-50 dark:bg-[#ceb174] transition-transform cursor-pointer duration-300"
               type="submit"
               value="Sign In"
               disabled={disable}

@@ -2,21 +2,77 @@
 import loginBg from "./../../assets/reservation/wood-grain-pattern-gray1x.png";
 import loginBg2 from "./../../assets/others/authentication.png";
 import loginAsideBg from "./../../assets/others/authentication2.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  LoadCanvasTemplate,
+  loadCaptchaEnginge,
+  validateCaptcha,
+} from "react-simple-captcha";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../Provider/AuthProvider";
+import Swal from "sweetalert2";
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const [disable, setDisable] = useState(true);
+  const { createUser, updateProfile } = useContext(AuthContext);
+
+  useEffect(() => {
+    loadCaptchaEnginge(6);
+  }, []);
+
+  const handleCaptcha = (e) => {
+    const value = e.target.value;
+    if (validateCaptcha(value)) {
+      setDisable(false);
+    }
+  };
+
   const handleRegister = (event) => {
     event.preventDefault();
     const form = event.target;
     const name = form.name.value;
+    const PhotoURL = form.PhotoURL.value;
     const email = form.email.value;
     const password = form.password.value;
 
-    console.log(name, email, password);
+    createUser(email, password)
+      .then(() => {
+        updateProfile({ displayName: name, photoURL: PhotoURL })
+          .then(() => {
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "User Registered Successfully",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            navigate("/");
+          })
+          .catch((error) => {
+            Swal.fire({
+              position: "center",
+              icon: "error",
+              title: "Failed to Update Profile",
+              text: error.message,
+              showConfirmButton: true,
+            });
+          });
+      })
+      .catch((error) => {
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "Failed to Register",
+          text: error.message,
+          showConfirmButton: true,
+        });
+      });
   };
+
   return (
     <div
-      className=" flex justify-center items-center min-h-screen"
+      className="flex justify-center items-center min-h-screen"
       style={{
         backgroundImage: `url(${loginBg2})`,
         backgroundSize: "cover",
@@ -31,29 +87,42 @@ const SignUp = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="">
+        <div>
           <img src={loginAsideBg} alt="" />
         </div>
-        <div className="">
+        <div>
           <h1 className="text-5xl mb-6 font-bold text-center">
             Please Sign Up
           </h1>
           <form onSubmit={handleRegister} className="space-y-6">
             <div className="space-y-1 text-lg">
-              <label htmlFor="username" className="block dark:text-gray-700">
+              <label htmlFor="name" className="block dark:text-gray-700">
                 Name
               </label>
               <input
                 type="text"
                 name="name"
                 id="name"
-                placeholder="Enter Your Email"
+                placeholder="Enter Your Name"
                 className="w-full px-4 py-3 rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800 focus:dark:border-[#ceb174]"
                 required
               />
             </div>
             <div className="space-y-1 text-lg">
-              <label htmlFor="username" className="block dark:text-gray-700">
+              <label htmlFor="PhotoURL" className="block dark:text-gray-700">
+                Photo URL
+              </label>
+              <input
+                type="url"
+                name="PhotoURL"
+                id="PhotoURL"
+                placeholder="Enter Your Photo URL"
+                className="w-full px-4 py-3 rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800 focus:dark:border-[#ceb174]"
+                required
+              />
+            </div>
+            <div className="space-y-1 text-lg">
+              <label htmlFor="email" className="block dark:text-gray-700">
                 Email
               </label>
               <input
@@ -66,7 +135,7 @@ const SignUp = () => {
               />
             </div>
             <div className="space-y-1 text-lg">
-              <label htmlFor="password" className="block dark:text-gray-600">
+              <label htmlFor="password" className="block dark:text-gray-700">
                 Password
               </label>
               <input
@@ -83,10 +152,24 @@ const SignUp = () => {
                 </a>
               </div>
             </div>
+            <div className="space-y-1 text-lg">
+              <label className="block dark:text-gray-600">
+                <LoadCanvasTemplate />
+              </label>
+              <input
+                type="text"
+                name="captcha"
+                id="captcha"
+                placeholder="Enter Captcha"
+                className="w-full px-4 py-3 rounded-md dark:border-gray-300 dark:bg-gray-50 dark:text-gray-800 focus:dark:border-[#ceb174]"
+                onBlur={handleCaptcha}
+              />
+            </div>
             <input
               className="block w-full p-3 text-xl font-medium hover:scale-105 text-center rounded-md dark:text-gray-50 dark:bg-[#ceb174] transition-transform duration-300"
               type="submit"
               value="Sign Up"
+              disabled={disable}
             />
           </form>
           <div className="flex items-center pt-4 space-x-1">
