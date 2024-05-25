@@ -62,10 +62,10 @@ const Navbar = () => {
       <div className="navbar-center hidden lg:flex">{navlinks}</div>
       <div className="navbar-end">
         <div className="mr-3">
-          <button className="btn">
+          <Link to="/dashboard/cart" className="btn">
             Cart
             <div className="badge bg-[#ceb174]">+{cart.length}</div>
-          </button>
+          </Link>
         </div>
         <div className="">
           {user ? (

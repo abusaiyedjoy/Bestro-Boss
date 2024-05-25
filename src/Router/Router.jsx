@@ -6,6 +6,10 @@ import OurShop from './../Pages/Order/OurShop';
 import ContactUs from "../Pages/Contact/ContactUs";
 import SignI from './../Components/Sing In/SignIn';
 import SignUp from './../Components/Sing Up/SignUp';
+import PrivateRoute from "./PrivateRoute.jsx/PrivateRoute";
+import Cart from "../Components/Deshboard/MyCart/Cart";
+import Dashboard from './../Components/Deshboard/Deshboard';
+import AllUsers from "../Components/Deshboard/All Users/AllUsers";
 
 export const router = createBrowserRouter([
     {
@@ -38,4 +42,21 @@ export const router = createBrowserRouter([
       path: "signUp",
       element: <SignUp></SignUp>,
     },
+    {
+      path: 'dashboard',
+      element: <PrivateRoute> <Dashboard></Dashboard> </PrivateRoute>,
+      children: [
+        {
+          path: 'cart',
+          element: <Cart></Cart>
+        },
+
+        // admin routes
+        {
+          path: 'users',
+          element: <AllUsers></AllUsers>
+        }
+
+      ]
+    }
   ]);

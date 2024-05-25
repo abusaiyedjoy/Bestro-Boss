@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
  import toast from "react-hot-toast";
 import useAxios from "../../Hook/useAxios";
+import useCart from "../../Hook/useCart";
 
 const FoodCard = ({ item }) => {
   const { name, image, price, recipe, _id } = item;
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const axiosSecure = useAxios();
+  const [, refetch]=useCart()
 
 
   const addToCart = (food) => {
@@ -27,8 +29,7 @@ const FoodCard = ({ item }) => {
       .then(res=>{
         if(res.data.insertedId){
           toast.success('Add to Cart Successfully!'),
-          console.log('Added successfully');
-
+          refetch()
         }
       })
     } else {
